@@ -56,8 +56,7 @@ bool prevSus;
 
 int prevBend = -1;
 
-const int volPin = A1;
-int prevVol = 0;
+int prevVol = -1;
 
 int playing[12];
 
@@ -65,9 +64,7 @@ int semis = (int)bendRange;
 
 int cents = (int)((bendRange - semis) * 100);
 
-float bendRange = 0;
-
-float bendSemis = (bend - 8192) / 8192.0 * bendRange;
+float bendSemis = 0;
 
 float noteToHz(float note) {
   return 440.0 * pow(2.0, (note + bendSemis - 69) / 12.0);
@@ -80,18 +77,18 @@ void setup() {
   sgtl5000_1.enable();
   sgtl5000_1.volume(0);
 
-  for (int i = 0, i < 12, i++) {
+  for (int i = 0; i < 12; i++) {
     waves[i]->begin(oscType);
     waves[i]->amplitude(0);
   }
 
-  for (int c = 0, c < 4, c++) {
+  for (int c = 0; c < 4; c++) {
     mixer1.gain(c, mixerGain1);
     mixer2.gain(c, mixerGain1);
     mixer3.gain(c, mixerGain1);
   }
 
-  for (int c = 0, c < 3, c++) {
+  for (int c = 0; c < 3; c++) {
     mixer4.gain(c, mixerGain2);
   }
     
@@ -114,7 +111,7 @@ void setup() {
 }
 
 void loop() {
-  int vol = analogRead(volPin) / 4095.0;
+  float vol = analogRead(volPin) / 4095.0;
   if (fabs(vol - prevVol) > 0.01) {
     sgtl5000_1.volume(vol);
     prevVol = vol;
@@ -129,6 +126,11 @@ void loop() {
     usbMIDI.sendPitchBend(bend, midiChannel);
     prevBend = bend;
     bendSemis = (bend - 8192) / 8192.0 * bendRange;
+    for (int i = 0; 0 < 12; i++) {
+      if (playing[i] > 0) {
+        waves[i]->frequency(noteToHz(playing[i]));
+      }
+    }
   }
 
 
