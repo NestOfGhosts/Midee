@@ -14,7 +14,10 @@ const int volPin = A1; // Pin the volume controls are connnected to (A1 is equiv
 
 // Midi settings
 const int midiChannel = 1; // Channel the midi signals are sent through
+
+// Midi AND Live settings
 const int baseNote = 60; // what middle c is tuned to. 60 is middle c, and you can change it to 47 for a lower c, and 73 for a higher c. change this if you want the instrument to play on a different range. Can also use this to change the key of the instrument
+const float bendRange = 12.0; // how much bend in each direction. 12 is a full octave up and down from the center. Adjust for more range/if your midi software doesnt support the range. Floats are allowed. 
 
 // Live playback settings
 const int oscType = WAVEFORM_SAWTOOTH; // Changes the waveform type (how live playback sounds
