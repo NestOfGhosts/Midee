@@ -19,6 +19,6 @@ const int baseNote = 60; // what middle c is tuned to. 60 is middle c, and you c
 // Live playback settings
 const int oscType = WAVEFORM_SAWTOOTH; // Changes the waveform type (how live playback sounds
 // Adjusts these three for balancing and clipping and stuff.
-const int oscAmp = 0.3; // Amplifier of each note. Adjust for volume/gain
-const int mixerGain1 = .25; // Gain of the first level of mixer. Each oscillator passes through two levels of mixer
-const int mixerGain2 = .33; // Gain of second level mixer
+const float oscAmp = 0.3; // Amplifier of each note. Adjust for volume/gain
+const float mixerGain1 = .25; // Gain of the first level of mixer. Each oscillator passes through two levels of mixer
+const float mixerGain2 = .33; // Gain of second level mixer
