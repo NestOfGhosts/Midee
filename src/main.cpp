@@ -122,7 +122,7 @@ void loop() {
     prevSus = susyn;
     if (!susyn) {
       for (int i = 0; i < 12; i++) {
-        if (!previous) waves[i]->amplitude(0);
+        if (!previous[i]) waves[i]->amplitude(0);
       }
     }
   }
