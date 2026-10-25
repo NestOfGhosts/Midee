@@ -66,7 +66,6 @@ int prevBend = -1;
 const int volPin = A1;
 int prevVol = 0;
 
-const int baseNote = 60;
 int playing[12];
 
 void setup() {
