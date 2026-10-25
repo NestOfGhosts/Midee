@@ -113,8 +113,18 @@ void setup() {
 void loop() {
   float vol = analogRead(volPin) / 4095.0;
   if (fabs(vol - prevVol) > 0.01) {
-    sgtl5000_1.volume(vol);
+    sgtl5000_1.volume(vol * volCap);
     prevVol = vol;
+  }
+  bool susyn = !digitalRead(susPin);
+  if (susyn != prevSus) {
+    usbMIDI.sendControlChange(64, susyn ? 127 : 0, midiChannel);
+    prevSus = susyn;
+    if (!susyn) {
+      for (int i = 0; i < 12; i++) {
+        if (!previous) waves[i]->amplitude(0);
+      }
+    }
   }
   
   int pitpot = analogRead(pitchPin);
@@ -145,18 +155,15 @@ void loop() {
       }
       else {
         usbMIDI.sendNoteOff(playing[i], 0, midiChannel);
-        waves[i]->amplitude(0);
+        if (!susyn) {
+          waves[i]->amplitude(0);
+        }
+        
       }
       previous[i] = pressed;
       Serial.print("Key ");
       Serial.print(i);
       Serial.println(pressed ? " is pressed" : " isn't pressed");
     }
-  }
-
-  bool susyn = !digitalRead(susPin);
-  if (susyn != prevSus) {
-    usbMIDI.sendControlChange(64, susyn ? 127 : 0, midiChannel);
-    prevSus = susyn;
   }
 }
