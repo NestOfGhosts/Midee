@@ -47,7 +47,7 @@ AudioSynthWaveform* waves[12] = {
   &waveform1, &waveform2, &waveform3, &waveform4, 
   &waveform5, &waveform6, &waveform7, &waveform8, 
   &waveform9, &waveform10, &waveform11, &waveform12, 
-}
+};
 
 const int threshold = 20;
 const int octDeadzone = 100;
@@ -72,8 +72,8 @@ void setup() {
   Serial.begin(9600);
 
   AudioMemory(20);
-  sgt15000_1.enable();
-  sgt15000_1.volume(0);
+  sgtl5000_1.enable();
+  sgtl5000_1.volume(0);
 
   analogReadResolution(12);
   analogReadAveraging(8);
@@ -94,9 +94,9 @@ void setup() {
 }
 
 void loop() {
-  int vol = analogRead(volPin);
-  if (abs(vol - prevVol) > 0.01) {
-    sgt15000_1.volume(vol);
+  int vol = analogRead(volPin) / 4095.0;
+  if (fabs(vol - prevVol) > 0.01) {
+    sgtl5000_1.volume(vol);
     prevVol = vol;
   }
   
