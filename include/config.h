@@ -7,7 +7,7 @@ const int octDeadzone = 100; // centertuned deadzone. Adjust to change deadzone 
 const int midiDelay = 1000; // delay from midi power-on. adjust if the arduino is starting midi before your computer opens a serial port / midi takes too long to boot up. delay is in miliseconds 
 
 // Pins. all the connections irl
-const int keyPin[12] = {0,1,2,3,4,5,6,9,10,11,12,16}; // Pins the keys are connected to. keyPin[0] is C, keyPin[2] is Db etc
+const int keyPin[12] = {0,1,2,3,4,5,6,9,10,11,12,16}; // Pins the keys are connected to. keyPin[0] is C, keyPin[1] is Db etc
 const int susPin = 17; // Pin the suspend key is connected to
 const int pitchPin = A0;  // Pin the pitch bend is connected to (A0 is equivalent to digital pin 14 on the Teensy 4.0)
 const int volPin = A1; // Pin the volume controls are connnected to (A1 is equivalent to digital pin 15)
