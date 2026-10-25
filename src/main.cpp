@@ -4,6 +4,7 @@
 #include <SPI.h>
 #include <SD.h>
 #include <SerialFlash.h>
+#include "config.h"
 
 // GUItool: begin automatically generated code
 AudioSynthWaveform       waveform4; //xy=327,450
@@ -85,12 +86,12 @@ void setup() {
   pinMode(susPin, INPUT_PULLUP);
 
   delay(midiDelay);
-  usbMIDI.sendControlChange(101, 0, 1);
-  usbMIDI.sendControlChange(100, 0, 1);
-  usbMIDI.sendControlChange(6, 12, 1);
-  usbMIDI.sendControlChange(38, 0 ,1);
-  usbMIDI.sendControlChange(101, 127, 1);
-  usbMIDI.sendControlChange(100, 127, 1);
+  usbMIDI.sendControlChange(101, 0, midiChannel);
+  usbMIDI.sendControlChange(100, 0, midiChannel);
+  usbMIDI.sendControlChange(6, 12, midiChannel);
+  usbMIDI.sendControlChange(38, 0 , midiChannel);
+  usbMIDI.sendControlChange(101, 127, midiChannel);
+  usbMIDI.sendControlChange(100, 127, midiChannel);
 }
 
 void loop() {
@@ -106,7 +107,7 @@ void loop() {
     bend = 8192;
   }
   if (abs(bend - prevBend) > threshold) {
-    usbMIDI.sendPitchBend(bend, 1);
+    usbMIDI.sendPitchBend(bend, midiChannel);
     prevBend = bend;
   }
 
@@ -116,10 +117,10 @@ void loop() {
     if (pressed != previous[i]) {
       if (pressed) {
         playing[i] = baseNote + i;
-        usbMIDI.sendNoteOn(playing[i], 100, 1);
+        usbMIDI.sendNoteOn(playing[i], 100, midiChannel);
       }
       else {
-        usbMIDI.sendNoteOff(playing[i], 0, 1);
+        usbMIDI.sendNoteOff(playing[i], 0, midiChannel);
       }
       previous[i] = pressed;
       Serial.print("Key ");
@@ -130,7 +131,7 @@ void loop() {
 
   bool susyn = !digitalRead(susPin);
   if (susyn != prevSus) {
-    usbMIDI.sendControlChange(64, susyn ? 127 : 0, 1);
+    usbMIDI.sendControlChange(64, susyn ? 127 : 0, midiChannel);
     prevSus = susyn;
   }
 }
