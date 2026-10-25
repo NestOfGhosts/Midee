@@ -20,6 +20,7 @@ const int baseNote = 60; // what middle c is tuned to. 60 is middle c, and you c
 const float bendRange = 12.0; // how much bend in each direction. 12 is a full octave up and down from the center. Adjust for more range/if your midi software doesnt support the range. Floats are allowed. 
 
 // Live playback settings
+const float volCap = 0.6 //Volume multiplier. Default setting (0.6) lowers volume by 60%
 const int oscType = WAVEFORM_SAWTOOTH; // Changes the waveform type (how live playback sounds
 // Adjusts these three for balancing and clipping and stuff.
 const float oscAmp = 0.3; // Amplifier of each note. Adjust for volume/gain
