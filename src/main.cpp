@@ -1,9 +1,56 @@
 #include <Arduino.h>
+#include <Audio.h>
+#include <Wire.h>
+#include <SPI.h>
+#include <SD.h>
+#include <SerialFlash.h>
+
+// GUItool: begin automatically generated code
+AudioSynthWaveform       waveform4; //xy=327,450
+AudioSynthWaveform       waveform1;      //xy=333,243
+AudioSynthWaveform       waveform2; //xy=340,307
+AudioSynthWaveform       waveform12; //xy=340,1056
+AudioSynthWaveform       waveform9; //xy=346,849
+AudioSynthWaveform       waveform3; //xy=350,361
+AudioSynthWaveform       waveform8; //xy=351,755
+AudioSynthWaveform       waveform10; //xy=353,913
+AudioSynthWaveform       waveform5; //xy=357,548
+AudioSynthWaveform       waveform6; //xy=364,612
+AudioSynthWaveform       waveform11; //xy=363,967
+AudioSynthWaveform       waveform7; //xy=374,666
+AudioMixer4              mixer1;         //xy=670,303
+AudioMixer4              mixer3; //xy=683,909
+AudioMixer4              mixer2; //xy=694,608
+AudioMixer4              mixer4;         //xy=982,527
+AudioOutputI2S           i2s1;           //xy=1314,544
+AudioConnection          patchCord1(waveform4, 0, mixer1, 3);
+AudioConnection          patchCord2(waveform1, 0, mixer1, 0);
+AudioConnection          patchCord3(waveform2, 0, mixer1, 1);
+AudioConnection          patchCord4(waveform12, 0, mixer3, 3);
+AudioConnection          patchCord5(waveform9, 0, mixer3, 0);
+AudioConnection          patchCord6(waveform3, 0, mixer1, 2);
+AudioConnection          patchCord7(waveform8, 0, mixer2, 3);
+AudioConnection          patchCord8(waveform10, 0, mixer3, 1);
+AudioConnection          patchCord9(waveform5, 0, mixer2, 0);
+AudioConnection          patchCord10(waveform6, 0, mixer2, 1);
+AudioConnection          patchCord11(waveform11, 0, mixer3, 2);
+AudioConnection          patchCord12(waveform7, 0, mixer2, 2);
+AudioConnection          patchCord13(mixer1, 0, mixer4, 0);
+AudioConnection          patchCord14(mixer3, 0, mixer4, 2);
+AudioConnection          patchCord15(mixer2, 0, mixer4, 1);
+AudioConnection          patchCord16(mixer4, 0, i2s1, 0);
+AudioConnection          patchCord17(mixer4, 0, i2s1, 1);
+AudioControlSGTL5000     sgtl5000_1;     //xy=116,96
+// GUItool: end automatically generated code
+
+AudioSynthWaveform* waves[12] = {
+  &waveform1, &waveform2, &waveform3, &waveform4, 
+  &waveform5, &waveform6, &waveform7, &waveform8, 
+  &waveform9, &waveform10, &waveform11, &waveform12, 
+}
 
 const int threshold = 20;
-
 const int octDeadzone = 100;
-
 const int midiDelay = 1000;
 
 const int keyPin[12] = {0,1,2,3,4,5,6,9,10,11,12,16};
@@ -15,11 +62,18 @@ bool prevSus;
 const int pitchPin = A0;
 int prevBend = -1;
 
+const int volPin = A1;
+int prevVol = 0;
+
 const int baseNote = 60;
 int playing[12];
 
 void setup() {
   Serial.begin(9600);
+
+  AudioMemory(20);
+  sgt15000_1.enable();
+  sgt15000_1.volume(0);
 
   analogReadResolution(12);
   analogReadAveraging(8);
@@ -40,6 +94,12 @@ void setup() {
 }
 
 void loop() {
+  int vol = analogRead(volPin);
+  if (abs(vol - prevVol) > 0.01) {
+    sgt15000_1.volume(vol);
+    prevVol = vol;
+  }
+  
   int pitpot = analogRead(pitchPin);
   int bend = map(pitpot, 0, 4095, 1, 16383);
   if (abs(bend - 8192) < octDeadzone) {
