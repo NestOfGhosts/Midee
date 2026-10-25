@@ -56,7 +56,7 @@ bool prevSus;
 
 int prevBend = -1;
 
-int prevVol = -1;
+float prevVol = -1;
 
 int playing[12];
 
@@ -126,7 +126,7 @@ void loop() {
     usbMIDI.sendPitchBend(bend, midiChannel);
     prevBend = bend;
     bendSemis = (bend - 8192) / 8192.0 * bendRange;
-    for (int i = 0; 0 < 12; i++) {
+    for (int i = 0; i < 12; i++) {
       if (playing[i] > 0) {
         waves[i]->frequency(noteToHz(playing[i]));
       }
@@ -145,7 +145,7 @@ void loop() {
       }
       else {
         usbMIDI.sendNoteOff(playing[i], 0, midiChannel);
-        waves[i]->amplitude(0)
+        waves[i]->amplitude(0);
       }
       previous[i] = pressed;
       Serial.print("Key ");
