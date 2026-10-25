@@ -50,23 +50,28 @@ AudioSynthWaveform* waves[12] = {
   &waveform9, &waveform10, &waveform11, &waveform12, 
 };
 
-const int threshold = 20;
-const int octDeadzone = 100;
-const int midiDelay = 1000;
-
-const int keyPin[12] = {0,1,2,3,4,5,6,9,10,11,12,16};
 bool previous[12];
 
-const int susPin = 17;
 bool prevSus;
 
-const int pitchPin = A0;
 int prevBend = -1;
 
 const int volPin = A1;
 int prevVol = 0;
 
 int playing[12];
+
+int semis = (int)bendRange;
+
+int cents = (int)((bendRange - semis) * 100);
+
+float bendRange = 0;
+
+float bendSemis = (bend - 8192) / 8192.0 * bendRange;
+
+float noteToHz(float note) {
+  return 440.0 * pow(2.0, (note + bendSemis - 69) / 12.0);
+}
 
 void setup() {
   Serial.begin(9600);
@@ -75,6 +80,21 @@ void setup() {
   sgtl5000_1.enable();
   sgtl5000_1.volume(0);
 
+  for (int i = 0, i < 12, i++) {
+    waves[i]->begin(oscType);
+    waves[i]->amplitude(0);
+  }
+
+  for (int c = 0, c < 4, c++) {
+    mixer1.gain(c, mixerGain1);
+    mixer2.gain(c, mixerGain1);
+    mixer3.gain(c, mixerGain1);
+  }
+
+  for (int c = 0, c < 3, c++) {
+    mixer4.gain(c, mixerGain2);
+  }
+    
   analogReadResolution(12);
   analogReadAveraging(8);
 
@@ -87,8 +107,8 @@ void setup() {
   delay(midiDelay);
   usbMIDI.sendControlChange(101, 0, midiChannel);
   usbMIDI.sendControlChange(100, 0, midiChannel);
-  usbMIDI.sendControlChange(6, 12, midiChannel);
-  usbMIDI.sendControlChange(38, 0 , midiChannel);
+  usbMIDI.sendControlChange(6, semis, midiChannel);
+  usbMIDI.sendControlChange(38, cents, midiChannel);
   usbMIDI.sendControlChange(101, 127, midiChannel);
   usbMIDI.sendControlChange(100, 127, midiChannel);
 }
@@ -108,6 +128,7 @@ void loop() {
   if (abs(bend - prevBend) > threshold) {
     usbMIDI.sendPitchBend(bend, midiChannel);
     prevBend = bend;
+    bendSemis = (bend - 8192) / 8192.0 * bendRange;
   }
 
 
@@ -117,9 +138,12 @@ void loop() {
       if (pressed) {
         playing[i] = baseNote + i;
         usbMIDI.sendNoteOn(playing[i], 100, midiChannel);
+        waves[i]->frequency(noteToHz(playing[i]));
+        waves[i]->amplitude(oscAmp);
       }
       else {
         usbMIDI.sendNoteOff(playing[i], 0, midiChannel);
+        waves[i]->amplitude(0)
       }
       previous[i] = pressed;
       Serial.print("Key ");
